@@ -1,0 +1,174 @@
+//global variables
+var currentScene = 1;
+var currentColor = color(255, 0, 0);
+var tiles = [];
+var redCount = 0;
+var yellowCount = 0;
+
+//for loop to create circles
+    for (var x = 0; x<6;++x)
+{
+    for(var y=0;y<7;++y)
+    {
+        ellipse(x*57 + 30, y*49 + 126, 30, 30);
+        tiles.push({
+           x: y * 50 + 43,
+           y: x * 50 + 118,
+           color: color(252, 252, 252),
+        });
+    }
+}
+
+var checkWin = function () {
+    
+    for (var i = 0; i < 43; i++) {
+    
+    if (tiles[i].color === tiles[i+7].color && tiles[i+7].color === tiles[i+14].color && tiles[i+14].color === tiles[i+21].color)
+    {return true;}
+    
+    if (tiles[i+7].color === tiles[i+14].color && tiles[i+14].color === tiles[i+21].color && tiles[i+21].color === tiles[i+28].color) {return true;}
+    
+    if (tiles[i+14].color === tiles[i+21].color && tiles[i+21].color === tiles[i+28].color && tiles[i+28].color === tiles[i+35].color) 
+    {return true;}
+    else {return false;}
+}
+    
+};
+
+if (checkWin === true){text("winner",100,150);}
+
+//khan button class code
+var Button = function(config) {
+    this.x = config.x || 0;
+    this.y = config.y || 0;
+    this.width = config.width || 150;
+    this.height = config.height || 50;
+    this.label = config.label || "Click";
+    this.onClick = config.onClick || function() {};
+};
+
+Button.prototype.draw = function() {
+    fill(0, 234, 255);
+    rect(this.x, this.y, this.width, this.height, 5);
+    fill(0, 0, 0);
+    textSize(19);
+    textAlign(LEFT, TOP);
+    text(this.label, this.x+10, this.y+this.height/4);
+};
+
+Button.prototype.isMouseInside = function() {
+    return mouseX > this.x &&
+           mouseX < (this.x + this.width) &&
+           mouseY > this.y &&
+           mouseY < (this.y + this.height);
+};
+
+Button.prototype.handleMouseClick = function() {
+    if (this.isMouseInside()) {
+        this.onClick();
+    }
+};
+
+// Draw Game Board Function
+
+var drawBoard = function() {
+background(34, 24, 240);
+
+    // Connect 4 Blue Banner
+    
+        stroke(255, 255, 255);
+        strokeWeight(4);
+    
+        fill(0, 0, 0);
+        rect(9, 16, 377, 71, 34);
+        noFill();
+    
+    //Word "Connect" Title
+        textSize(70);
+        fill(255, 255, 255);
+        text("Connect", 25, 9, 318, 214);
+        noFill();
+    
+    // Number "4" Title and Color
+
+        fill(255, 0, 0);
+        text("4", 310, 9);
+        noFill();
+
+    //Circle Colors
+
+        fill(255, 255, 255);
+        stroke(0, 0, 0);
+        strokeWeight(5);
+
+    
+
+};
+
+//start button
+var startButton = new Button({
+    x: 150,
+    y: 250,
+    width: 105,
+    label: "Start Now",
+    onClick: function() {
+        currentScene = 2;
+        drawBoard();
+    }
+});
+
+//splash screen
+var splashScreen = function()
+{
+    background(179, 97, 97);
+    fill(0, 0, 0);
+    textSize(40);
+    textAlign(CENTER, CENTER);
+    text("Connect 4",0,-94,400,351);
+    textSize(15);
+    text("The first to get 4 in a row wins.",-3,101,400,99);
+    startButton.draw();
+};
+
+
+
+draw = function() {
+    
+    if(currentScene === 1){
+        splashScreen();
+        
+    } else {
+    
+    drawBoard();
+        // draw tiles 
+        for (var i in tiles){
+            fill(tiles[i].color);
+            ellipse(tiles[i].x, tiles[i].y, 20, 20);
+        }
+    }
+};
+
+// determine if tiles are clicked 
+mouseClicked = function() {
+    
+    if(currentScene === 1){ 
+        startButton.handleMouseClick();
+    } else if(currentScene === 2){
+        drawBoard();
+        for (var i in tiles){
+            if (    mouseX > tiles[i].x - 10 && 
+                    mouseX < tiles[i].x + 10 &&
+                    mouseY > tiles[i].y - 10 && 
+                    mouseY < tiles[i].y + 10
+                )
+                //change player colors
+                {   
+                    if (tiles[i].color !== color(255, 255, 255)) {
+                    tiles[i].color = currentColor;
+                    if(currentColor=== color(255, 0, 0))
+                        {currentColor = color(255, 255, 0);}
+                    else {currentColor = color(255, 0, 0);}
+                }}
+        }
+    }
+};
